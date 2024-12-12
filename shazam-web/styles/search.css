@@ -1,0 +1,187 @@
+.upload-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - var(--nav-height) * 2);
+    padding: 2rem;
+    background: radial-gradient(circle at center, #141414 0%, var(--background-dark) 100%);
+}
+
+.upload-box {
+    width: 100%;
+    max-width: 500px;
+    background-color: var(--surface-dark);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.drop-zone {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-color: var(--card-dark);
+}
+
+.drop-zone.drag-over {
+    border-color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.05);
+    transform: scale(1.02);
+}
+
+.music-icon {
+    font-size: 3rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.drop-zone:hover .music-icon {
+    transform: scale(1.1);
+    color: var(--text-primary);
+}
+
+.upload-box h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.upload-box p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+}
+
+.upload-button {
+    background: linear-gradient(45deg, #2d2d2d, #3a3a3a);
+    color: var(--text-primary);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 100px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.upload-button:hover {
+    background: linear-gradient(45deg, #343434, #404040);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.upload-button:active {
+    transform: translateY(0);
+}
+
+.upload-button i {
+    font-size: 1.1rem;
+}
+
+.results-container {
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.result-card {
+    background-color: var(--surface-dark);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.result-image {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.result-info {
+    flex: 1;
+}
+
+.result-info h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.result-info p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.result-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.result-button {
+    background-color: var(--button-color);
+    color: var(--text-primary);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.result-button:hover {
+    background-color: var(--button-hover);
+}
+
+@media (max-width: 640px) {
+    .upload-section {
+        padding: 1rem;
+    }
+
+    .upload-box {
+        padding: 1.5rem;
+    }
+
+    .drop-zone {
+        padding: 1.5rem;
+    }
+
+    .music-icon {
+        font-size: 2.5rem;
+    }
+
+    .upload-box h2 {
+        font-size: 1.25rem;
+    }
+
+    .upload-button {
+        padding: 0.875rem 1.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Drag and Drop Animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

@@ -1,0 +1,221 @@
+.history-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: calc(100vh - var(--nav-height) * 2);
+    padding: 1.5rem;
+    background: radial-gradient(circle at center, #141414 0%, var(--background-dark) 100%);
+}
+
+.history-header {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 0.5rem;
+}
+
+.history-header h2 {
+    font-size: 1.75rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.clear-history {
+    background: linear-gradient(45deg, #2d2d2d, #3a3a3a);
+    color: var(--text-primary);
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.clear-history:hover {
+    background: linear-gradient(45deg, #343434, #404040);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.clear-history:active {
+    transform: translateY(0);
+}
+
+.clear-history i {
+    font-size: 1rem;
+}
+
+.search-list {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.history-item {
+    background: linear-gradient(45deg, rgba(42, 42, 42, 0.5), rgba(58, 58, 58, 0.5));
+    border-radius: 16px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.history-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(45deg, rgba(52, 52, 52, 0.6), rgba(64, 64, 64, 0.6));
+}
+
+.history-image {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.history-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.history-info h3 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-info p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-timestamp {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    opacity: 0.7;
+    margin-top: 0.25rem;
+}
+
+.history-button {
+    background: linear-gradient(45deg, #2d2d2d, #3a3a3a);
+    color: var(--text-primary);
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.history-button:hover {
+    background: linear-gradient(45deg, #343434, #404040);
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.history-button i {
+    font-size: 1.1rem;
+}
+
+.empty-history {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(45deg, rgba(42, 42, 42, 0.5), rgba(58, 58, 58, 0.5));
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.empty-history i {
+    font-size: 3rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.empty-history p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+@media (max-width: 640px) {
+    .history-content {
+        padding: 1rem;
+    }
+
+    .history-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .history-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .clear-history {
+        padding: 0.6rem 1rem;
+    }
+
+    .history-item {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .history-image {
+        width: 56px;
+        height: 56px;
+    }
+
+    .history-info h3 {
+        font-size: 1rem;
+    }
+
+    .history-info p {
+        font-size: 0.9rem;
+    }
+
+    .history-button {
+        width: 38px;
+        height: 38px;
+    }
+
+    .history-button i {
+        font-size: 1rem;
+    }
+}
