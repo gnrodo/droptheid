@@ -50,7 +50,7 @@ class App {
             return html;
         } catch (error) {
             console.error('Error loading view:', error);
-            return '<div class="error">Error loading view</div>';
+            return '<div class="error">Error al cargar la vista</div>';
         }
     }
 
@@ -198,6 +198,13 @@ class App {
     }
 
     async handleFileUpload(file) {
+        // Check file size before uploading (50MB limit)
+        const MAX_FILE_SIZE = 52428800; // 50MB in bytes
+        if (file.size > MAX_FILE_SIZE) {
+												this.showMessage('El archivo es demasiado grande. El tamaño máximo permitido es 50MB.', 'error');
+            return;
+        }
+
         this.showLoading();
         const formData = new FormData();
         formData.append('video', file);
@@ -209,15 +216,15 @@ class App {
             });
 
             if (!response.ok) {
-                throw new Error('Upload failed');
+                throw new Error('Subida fallida');
             }
 
             const result = await response.json();
             this.showResults(result);
             this.addToSearchHistory(result);
         } catch (error) {
-            console.error('Upload error:', error);
-            this.showMessage('Error uploading file. Please try again.', 'error');
+            console.error('Error de subida:', error);
+            this.showMessage('Error al subir el archivo. Por favor intenta de nuevo.', 'error');
         } finally {
             this.hideLoading();
         }
@@ -326,7 +333,7 @@ class App {
 
     clearSearchHistory() {
         localStorage.removeItem('searchHistory');
-        this.showMessage('Search history cleared');
+        this.showMessage('Historial borrado');
     }
 
     displaySearchHistory(viewElement) {
@@ -404,7 +411,7 @@ class App {
             <div class="loading-overlay">
                 <div class="loading-content">
                     <div class="spinner"></div>
-                    <p>Loading...</p>
+                    <p>Cargando...</p>
                 </div>
             </div>
         `;

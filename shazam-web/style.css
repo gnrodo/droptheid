@@ -57,6 +57,9 @@ body {
     position: relative;
     overflow: hidden;
     height: calc(100vh - var(--nav-height) * 2);
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 /* Views */
@@ -72,7 +75,8 @@ body {
     transition: transform 0.3s ease, opacity 0.3s ease, visibility 0s linear 0.3s;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 1rem;
+    padding: 0;
+    margin: 0;
 }
 
 .view.active {
@@ -86,15 +90,16 @@ body {
 .bottom-nav {
     background-color: var(--background-dark);
     border-top: 1px solid var(--border-color);
-    padding: 0.5rem 1rem;
+    padding: 0.875rem 1rem;
     display: flex;
     justify-content: space-around;
+    align-items: center;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     z-index: 100;
-    height: var(--nav-height);
+    height: calc(var(--nav-height) + 15px);
 }
 
 .nav-item {
@@ -104,12 +109,14 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
+    justify-content: center;
+    gap: 0.45rem;
     cursor: pointer;
     transition: var(--transition);
-    padding: 0.5rem;
+    padding: 0;
     min-width: 72px;
     opacity: 0.7;
+    height: 100%;
 }
 
 .nav-item.active {
@@ -118,13 +125,15 @@ body {
 }
 
 .nav-item i {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
     transition: var(--transition);
+    line-height: 1;
 }
 
 .nav-item span {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     transition: var(--transition);
+    line-height: 1;
 }
 
 .nav-item:hover {
@@ -250,10 +259,6 @@ body {
     .message {
         width: 90%;
         min-width: auto;
-    }
-
-    .view {
-        padding: 0.75rem;
     }
 }
 
