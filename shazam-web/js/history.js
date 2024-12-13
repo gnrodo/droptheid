@@ -1,5 +1,6 @@
 class HistoryView {
     constructor() {
+        this.HISTORY_LIMIT = 20; // Límite consistente con app.js
         this.init();
     }
 
@@ -11,9 +12,12 @@ class HistoryView {
             }
         });
 
-        // Listen for history updates from search view
-        document.addEventListener('historyUpdated', () => {
-            this.updateHistoryList();
+        // Listen for settings changes
+        document.addEventListener('settingsChanged', (event) => {
+            if (!event.detail.saveTracks) {
+                // Si se desactiva guardar tracks, limpiar el historial
+                this.clearHistory();
+            }
         });
     }
 
@@ -32,9 +36,10 @@ class HistoryView {
         const searchList = document.querySelector('.search-list');
         if (!searchList) return;
 
-        const history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+        const settings = this.loadSettings();
+        const history = this.getHistory();
 
-        if (history.length === 0) {
+        if (!settings.saveTracks || history.length === 0) {
             searchList.innerHTML = `
                 <div class="empty-history">
                     <i class="fas fa-history"></i>
@@ -46,9 +51,7 @@ class HistoryView {
 
         searchList.innerHTML = history.map((item, index) => `
             <div class="search-item" data-index="${index}">
-                <div class="play-button">
-                    <i class="fas fa-play"></i>
-                </div>
+                <img src="${item.cover !== 'Unknown' ? item.cover : 'images/logo.png'}" alt="${item.track}" class="history-image">
                 <div class="song-info">
                     <div class="song-title">${item.track}</div>
                     <div class="artist-name">${item.artist}</div>
@@ -76,7 +79,7 @@ class HistoryView {
             item.addEventListener('click', () => {
                 const index = item.dataset.index;
                 const historyItem = history[index];
-                if (historyItem.url) {
+                if (historyItem.url && historyItem.url !== 'Unknown') {
                     window.open(historyItem.url, '_blank');
                 }
             });
@@ -91,24 +94,51 @@ class HistoryView {
                 item.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
                 item.style.opacity = '1';
                 item.style.transform = 'translateX(0)';
-            }, 50 * index); // Stagger the animations
+            }, 50 * index);
         });
     }
 
     deleteHistoryItem(index) {
-        const history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+        const history = this.getHistory();
         history.splice(index, 1);
-        localStorage.setItem('searchHistory', JSON.stringify(history));
+        this.saveHistory(history);
         this.updateHistoryList();
         
         window.app.showMessage('Item eliminado del historial');
     }
 
     clearHistory() {
-        localStorage.setItem('searchHistory', '[]');
+        this.saveHistory([]);
         this.updateHistoryList();
-        
         window.app.showMessage('Historial limpiado');
+    }
+
+    getHistory() {
+        try {
+            return JSON.parse(localStorage.getItem('searchHistory') || '[]');
+        } catch (error) {
+            console.error('Error reading search history:', error);
+            return [];
+        }
+    }
+
+    saveHistory(history) {
+        // Asegurar que no exceda el límite
+        if (history.length > this.HISTORY_LIMIT) {
+            history = history.slice(0, this.HISTORY_LIMIT);
+        }
+        localStorage.setItem('searchHistory', JSON.stringify(history));
+    }
+
+    loadSettings() {
+        const defaultSettings = { saveTracks: true };
+        try {
+            const savedSettings = localStorage.getItem('settings');
+            return savedSettings ? { ...defaultSettings, ...JSON.parse(savedSettings) } : defaultSettings;
+        } catch (error) {
+            console.error('Error loading settings:', error);
+            return defaultSettings;
+        }
     }
 
     formatTime(timestamp) {
@@ -122,7 +152,7 @@ class HistoryView {
         }
         // Less than 7 days
         if (diff < 7 * 24 * 60 * 60 * 1000) {
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
             return days[date.getDay()];
         }
         // Otherwise show date

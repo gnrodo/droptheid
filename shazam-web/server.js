@@ -7,6 +7,12 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
+// Crear directorio para archivos temporales si no existe
+const uploadDir = path.join(__dirname, 'temp');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+
 // Servir archivos estáticos desde el directorio raíz
 app.use(express.static(__dirname));
 
@@ -18,12 +24,20 @@ app.get('/', (req, res) => {
 app.post('/upload', (req, res) => {
     const form = formidable({
         multiples: false,
-        uploadDir: __dirname,
-        keepExtensions: true
+        uploadDir: uploadDir,
+        keepExtensions: true,
+        maxFileSize: 50 * 1024 * 1024, // 50MB límite
+        filter: function ({name, originalFilename, mimetype}) {
+            // Aceptar solo archivos de video y audio
+            return mimetype && (mimetype.includes('video/') || mimetype.includes('audio/'));
+        }
     });
 
     form.parse(req, async (err, fields, files) => {
         if (err) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(413).json({ error: 'File is too large. Maximum size is 50MB.' });
+            }
             console.error('Error parsing form:', err);
             return res.status(500).json({ error: 'Error parsing form data.' });
         }
@@ -36,7 +50,7 @@ app.post('/upload', (req, res) => {
         try {
             const videoFile = files.video[0];
             const tempFilePath = videoFile.filepath;
-            const newFilePath = path.join(__dirname, videoFile.originalFilename);
+            const newFilePath = path.join(uploadDir, videoFile.originalFilename);
             
             // Renombrar el archivo temporal
             fs.renameSync(tempFilePath, newFilePath);
@@ -45,6 +59,11 @@ app.post('/upload', (req, res) => {
             // Ejecutar el script de Python con la ruta completa
             const pythonScript = path.join(__dirname, '..', 'shazam.py');
             exec(`python "${pythonScript}" "${newFilePath}"`, (error, stdout, stderr) => {
+                // Limpiar el archivo temporal después de procesarlo
+                if (fs.existsSync(newFilePath)) {
+                    fs.unlinkSync(newFilePath);
+                }
+
                 if (error) {
                     console.error('Exec error:', error);
                     console.error('Stderr:', stderr);
@@ -71,11 +90,6 @@ app.post('/upload', (req, res) => {
                         }
                     }
 
-                    // Limpiar el archivo temporal
-                    if (fs.existsSync(newFilePath)) {
-                        fs.unlinkSync(newFilePath);
-                    }
-
                     res.json({ track, artist, url, cover });
                 } catch (parseError) {
                     console.error('Parse error:', parseError);
@@ -84,10 +98,40 @@ app.post('/upload', (req, res) => {
             });
         } catch (fileError) {
             console.error('File handling error:', fileError);
+            // Asegurarse de limpiar archivos temporales en caso de error
+            const tempFiles = [tempFilePath, newFilePath].filter(fs.existsSync);
+            tempFiles.forEach(file => fs.unlinkSync(file));
             res.status(500).json({ error: 'Error handling uploaded file.' });
         }
     });
 });
+
+// Limpiar archivos temporales periódicamente (cada hora)
+setInterval(() => {
+    if (fs.existsSync(uploadDir)) {
+        fs.readdir(uploadDir, (err, files) => {
+            if (err) {
+                console.error('Error reading temp directory:', err);
+                return;
+            }
+            files.forEach(file => {
+                const filePath = path.join(uploadDir, file);
+                fs.stat(filePath, (err, stats) => {
+                    if (err) {
+                        console.error('Error getting file stats:', err);
+                        return;
+                    }
+                    // Eliminar archivos más antiguos de 1 hora
+                    if (Date.now() - stats.mtime.getTime() > 3600000) {
+                        fs.unlink(filePath, err => {
+                            if (err) console.error('Error deleting temp file:', err);
+                        });
+                    }
+                });
+            });
+        });
+    }
+}, 3600000);
 
 // Manejar todas las demás rutas sirviendo index.html
 app.get('*', (req, res) => {
@@ -96,4 +140,23 @@ app.get('*', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
+});
+
+// Limpiar archivos temporales al cerrar el servidor
+process.on('SIGINT', () => {
+    if (fs.existsSync(uploadDir)) {
+        fs.readdir(uploadDir, (err, files) => {
+            if (err) {
+                console.error('Error reading temp directory:', err);
+                process.exit(1);
+            }
+            files.forEach(file => {
+                const filePath = path.join(uploadDir, file);
+                fs.unlinkSync(filePath);
+            });
+            process.exit(0);
+        });
+    } else {
+        process.exit(0);
+    }
 });

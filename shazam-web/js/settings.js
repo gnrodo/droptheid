@@ -23,33 +23,10 @@ class SettingsView {
             // Add change handler
             saveTracksToggle.addEventListener('change', () => {
                 this.updateSetting('saveTracks', saveTracksToggle.checked);
-            });
-
-            // Add animation for toggle
-            const slider = saveTracksToggle.nextElementSibling;
-            if (slider) {
-                slider.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    saveTracksToggle.checked = !saveTracksToggle.checked;
-                    this.updateSetting('saveTracks', saveTracksToggle.checked);
-                });
-            }
-        }
-
-        // Set up save button
-        const saveButton = document.querySelector('.save-settings');
-        if (saveButton) {
-            saveButton.addEventListener('click', () => {
-                this.saveSettings();
-            });
-
-            // Add hover animation
-            saveButton.addEventListener('mouseenter', () => {
-                saveButton.style.transform = 'translateY(-2px)';
-            });
-
-            saveButton.addEventListener('mouseleave', () => {
-                saveButton.style.transform = 'translateY(0)';
+                // Notificar al historial del cambio
+                document.dispatchEvent(new CustomEvent('settingsChanged', {
+                    detail: { saveTracks: saveTracksToggle.checked }
+                }));
             });
         }
 
@@ -79,9 +56,7 @@ class SettingsView {
 
     loadSettings() {
         const defaultSettings = {
-            saveTracks: true,
-            theme: 'dark',
-            language: 'es'
+            saveTracks: true
         };
 
         const savedSettings = localStorage.getItem('settings');
@@ -92,59 +67,7 @@ class SettingsView {
         const settings = this.loadSettings();
         settings[key] = value;
         localStorage.setItem('settings', JSON.stringify(settings));
-    }
-
-    saveSettings() {
-        const saveTracksToggle = document.getElementById('save-tracks');
-        const settings = {
-            saveTracks: saveTracksToggle ? saveTracksToggle.checked : true,
-            theme: 'dark', // For future theme implementation
-            language: 'es' // For future language implementation
-        };
-
-        localStorage.setItem('settings', JSON.stringify(settings));
-        
-        // Show success message
-        window.app.showMessage('Configuración guardada correctamente');
-
-        // Add save animation
-        const saveButton = document.querySelector('.save-settings');
-        if (saveButton) {
-            const icon = saveButton.querySelector('i');
-            if (icon) {
-                icon.className = 'fas fa-check';
-                saveButton.classList.add('saved');
-                
-                setTimeout(() => {
-                    icon.className = 'fas fa-save';
-                    saveButton.classList.remove('saved');
-                }, 2000);
-            }
-        }
-    }
-
-    // Method to export settings (for future implementation)
-    exportSettings() {
-        const settings = this.loadSettings();
-        const dataStr = JSON.stringify(settings, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-        
-        const exportLink = document.createElement('a');
-        exportLink.setAttribute('href', dataUri);
-        exportLink.setAttribute('download', 'droptheid-settings.json');
-        exportLink.click();
-    }
-
-    // Method to import settings (for future implementation)
-    importSettings(jsonString) {
-        try {
-            const settings = JSON.parse(jsonString);
-            localStorage.setItem('settings', JSON.stringify(settings));
-            this.setup(); // Reload settings
-            window.app.showMessage('Configuración importada correctamente');
-        } catch (error) {
-            window.app.showMessage('Error al importar la configuración', 'error');
-        }
+        window.app.showMessage('Configuración actualizada');
     }
 }
 
