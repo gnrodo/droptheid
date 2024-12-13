@@ -1,1 +1,1 @@
-web: chmod +x start.sh && ./start.sh
+web: cd shazam-web && npm install && node server.js

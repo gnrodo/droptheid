@@ -8,7 +8,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Crear directorio para archivos temporales si no existe
-const uploadDir = path.join('/app/shazam-web', 'temp');
+const uploadDir = path.join(__dirname, 'temp');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -57,8 +57,8 @@ app.post('/upload', (req, res) => {
 
             console.log('Executing Python script with file:', newFilePath);
             // Ejecutar el script de Python con la ruta completa
-            const pythonScript = path.join('/app', 'shazam.py');
-            exec(`/usr/local/bin/python3 "${pythonScript}" "${newFilePath}"`, (error, stdout, stderr) => {
+            const pythonScript = path.join(__dirname, '..', 'shazam.py');
+            exec(`python "${pythonScript}" "${newFilePath}"`, (error, stdout, stderr) => {
                 // Limpiar el archivo temporal después de procesarlo
                 if (fs.existsSync(newFilePath)) {
                     fs.unlinkSync(newFilePath);

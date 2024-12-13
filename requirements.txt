@@ -1,2 +1,3 @@
 shazamio==0.4.0.1
 python-ffmpeg==2.0.4
+requests==2.31.0
