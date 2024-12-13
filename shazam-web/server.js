@@ -1,6 +1,6 @@
 const express = require('express');
 const { formidable } = require('formidable');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -59,22 +59,42 @@ app.post('/upload', (req, res) => {
             // Ejecutar el script de Python con la ruta completa
             const pythonScript = path.resolve(__dirname, '..', 'shazam.py');
             console.log('Python script path:', pythonScript);
+            console.log('File exists:', fs.existsSync(pythonScript));
+            console.log('Python script content:');
+            console.log(fs.readFileSync(pythonScript, 'utf8'));
             
-            exec(`python "${pythonScript}" "${newFilePath}"`, (error, stdout, stderr) => {
+            const pythonProcess = spawn('python', [pythonScript, newFilePath]);
+            let stdoutData = '';
+            let stderrData = '';
+
+            pythonProcess.stdout.on('data', (data) => {
+                console.log('Python stdout:', data.toString());
+                stdoutData += data.toString();
+            });
+
+            pythonProcess.stderr.on('data', (data) => {
+                console.error('Python stderr:', data.toString());
+                stderrData += data.toString();
+            });
+
+            pythonProcess.on('close', (code) => {
                 // Limpiar el archivo temporal después de procesarlo
                 if (fs.existsSync(newFilePath)) {
                     fs.unlinkSync(newFilePath);
                 }
 
-                if (error) {
-                    console.error('Exec error:', error);
-                    console.error('Stderr:', stderr);
-                    return res.status(500).json({ error: 'Error executing shazam script.' });
+                if (code !== 0) {
+                    console.error('Python process exited with code:', code);
+                    console.error('Full stderr:', stderrData);
+                    return res.status(500).json({ 
+                        error: 'Error executing shazam script.',
+                        details: stderrData
+                    });
                 }
                 
-                console.log('Python script output:', stdout);
+                console.log('Python script output:', stdoutData);
                 try {
-                    const lines = stdout.trim().split('\n');
+                    const lines = stdoutData.trim().split('\n');
                     let track = 'Unknown';
                     let artist = 'Unknown';
                     let url = 'Unknown';
@@ -142,23 +162,4 @@ app.get('*', (req, res) => {
 
 app.listen(port, '0.0.0.0', () => {
     console.log(`Server listening at http://0.0.0.0:${port}`);
-});
-
-// Limpiar archivos temporales al cerrar el servidor
-process.on('SIGINT', () => {
-    if (fs.existsSync(uploadDir)) {
-        fs.readdir(uploadDir, (err, files) => {
-            if (err) {
-                console.error('Error reading temp directory:', err);
-                process.exit(1);
-            }
-            files.forEach(file => {
-                const filePath = path.join(uploadDir, file);
-                fs.unlinkSync(filePath);
-            });
-            process.exit(0);
-        });
-    } else {
-        process.exit(0);
-    }
 });

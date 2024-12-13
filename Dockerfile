@@ -18,6 +18,12 @@ COPY . .
 # Instalar dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Verificar la instalación de Python y sus dependencias
+RUN python --version && \
+    pip list && \
+    ls -la /app/shazam.py && \
+    cat /app/shazam.py
+
 # Asegurarse de que shazam.py tenga permisos de ejecución
 RUN chmod +x shazam.py
 
