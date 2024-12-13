@@ -1,1 +1,1 @@
-web: cd shazam-web && npm install && npm start
+web: npm start
