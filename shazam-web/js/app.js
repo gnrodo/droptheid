@@ -60,83 +60,85 @@ class App {
             return;
         }
 
-        // Update navigation UI
-        this.navItems.forEach(item => {
-            if (item.dataset.view === viewName) {
-                item.classList.add('active');
-            } else {
-                item.classList.remove('active');
-            }
-        });
-
-        // Hide current view with animation
-        if (this.currentView) {
-            const currentViewElement = document.getElementById(`${this.currentView}-view`);
-            if (currentViewElement) {
-                currentViewElement.style.opacity = '0';
-                currentViewElement.style.transform = 'translateX(-100%)';
-                await new Promise(resolve => setTimeout(resolve, 300));
-                currentViewElement.remove();
-            }
+        // Prevent multiple navigations while transition is happening
+        if (this.isNavigating) {
+            console.log('Navigation already in progress');
+            return;
         }
+        this.isNavigating = true;
 
-        // Load and show new view
-        console.log('Loading view content for:', viewName);
-        const viewContent = await this.loadView(viewName);
-        
-        // Create container for the new view
-        const mainContainer = document.querySelector('.main-container');
-        const tempContainer = document.createElement('div');
-        tempContainer.innerHTML = viewContent;
-        
-        // Get the view element with all its classes and content
-        const newViewElement = tempContainer.firstElementChild;
-        mainContainer.appendChild(newViewElement);
-        
-        // Show new view with animation
-        setTimeout(() => {
+        try {
+            // Update navigation UI
+            this.navItems.forEach(item => {
+                if (item.dataset.view === viewName) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            // Hide current view with animation
+            if (this.currentView) {
+                const currentViewElement = document.getElementById(`${this.currentView}-view`);
+                if (currentViewElement) {
+                    currentViewElement.style.opacity = '0';
+                    currentViewElement.style.transform = 'translateX(-100%)';
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    currentViewElement.remove();
+                }
+            }
+
+            // Load and show new view
+            console.log('Loading view content for:', viewName);
+            const viewContent = await this.loadView(viewName);
+            
+            // Create container for the new view
+            const mainContainer = document.querySelector('.main-container');
+            const tempContainer = document.createElement('div');
+            tempContainer.innerHTML = viewContent;
+            
+            // Get the view element with all its classes and content
+            const newViewElement = tempContainer.firstElementChild;
+            mainContainer.appendChild(newViewElement);
+            
+            // Show new view with animation
             newViewElement.style.opacity = '0';
             newViewElement.style.transform = 'translateX(100%)';
             
             // Force reflow
             void newViewElement.offsetWidth;
             
+            newViewElement.style.transition = 'all 0.3s ease-out';
             newViewElement.style.opacity = '1';
             newViewElement.style.transform = 'translateX(0)';
             newViewElement.classList.add('active');
-        }, 0);
 
-        this.currentView = viewName;
+            this.currentView = viewName;
 
-        // Update browser history
-        if (!skipPushState) {
-            const url = `${window.location.pathname}#${viewName}`;
-            window.history.pushState({ view: viewName }, '', url);
-        }
+            // Update browser history
+            if (!skipPushState) {
+                const url = `${window.location.pathname}#${viewName}`;
+                window.history.pushState({ view: viewName }, '', url);
+            }
 
-        // Set up view-specific functionality
-        if (viewName === 'home') {
-            this.setupHomeView(newViewElement);
-        } else if (viewName === 'search') {
-            this.setupSearchView(newViewElement);
-        } else if (viewName === 'history') {
-            this.setupHistoryView(newViewElement);
-        }
+            // Set up view-specific functionality
+            if (viewName === 'search') {
+                this.setupSearchView(newViewElement);
+            } else if (viewName === 'history') {
+                this.setupHistoryView(newViewElement);
+            }
 
-        // Dispatch event for view-specific scripts
-        const event = new CustomEvent('viewLoaded', { 
-            detail: { view: viewName }
-        });
-        document.dispatchEvent(event);
-        console.log('View navigation complete:', viewName);
-    }
-
-    setupHomeView(viewElement) {
-        const continueButton = viewElement.querySelector('.continue-button');
-        if (continueButton) {
-            continueButton.addEventListener('click', () => {
-                this.navigateToView('search');
+            // Dispatch event for view-specific scripts
+            const event = new CustomEvent('viewLoaded', { 
+                detail: { view: viewName }
             });
+            document.dispatchEvent(event);
+            console.log('View navigation complete:', viewName);
+
+            // Wait for animation to complete before allowing new navigation
+            await new Promise(resolve => setTimeout(resolve, 300));
+        } finally {
+            this.isNavigating = false;
         }
     }
 
@@ -218,19 +220,36 @@ class App {
         const resultsContainer = document.getElementById('results');
         if (!resultsContainer) return;
 
+        // Declare variables first
+        let coverImage, trackName, artistName;
+        // Trim and convert to lowercase for comparison
+        const track = (data.track || '').trim().toLowerCase();
+        const isUnknown = track === 'unknown' || !track;
+
+        // Then assign values based on isUnknown
+        if (isUnknown) {
+            coverImage = 'images/solodisco.png';
+            trackName = 'Pista Desconocida';
+            artistName = 'Artista Desconocido';
+        } else {
+            coverImage = data.cover;
+            trackName = data.track;
+            artistName = data.artist;
+        }
+
         const resultHTML = `
-            <div class="result-card">
-                <img src="${data.cover}" alt="${data.track}" class="result-image">
-                <div class="result-info">
-                    <h3>${data.track}</h3>
-                    <p>${data.artist}</p>
+            <div class="history-item">
+                <img src="${coverImage}" alt="${trackName}" class="history-image">
+                <div class="history-info">
+                    <h3>${trackName}</h3>
+                    <p>${artistName}</p>
+                    <span class="history-timestamp">${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
-                <div class="result-actions">
-                    <a href="${data.url}" target="_blank" class="result-button">
+                ${!isUnknown ? `
+                    <a href="${data.url}" target="_blank" class="history-button">
                         <i class="fas fa-external-link-alt"></i>
-                        Open
                     </a>
-                </div>
+                ` : ''}
             </div>
         `;
 
@@ -301,19 +320,30 @@ class App {
             return `${hours}:${minutes}`;
         };
 
-        const historyHTML = history.map(item => `
-            <div class="history-item">
-                <img src="${item.cover}" alt="${item.track}" class="history-image">
-                <div class="history-info">
-                    <h3>${item.track}</h3>
-                    <p>${item.artist}</p>
-                    <span class="history-timestamp">${formatTime(item.timestamp)}</span>
+        const historyHTML = history.map(item => {
+            // Trim and convert to lowercase for comparison
+            const track = (item.track || '').trim().toLowerCase();
+            const isUnknown = track === 'unknown' || !track;
+            const coverImage = isUnknown ? 'images/solodisco.png' : item.cover;
+            const trackName = isUnknown ? 'Pista Desconocida' : item.track;
+            const artistName = isUnknown ? 'Artista Desconocido' : item.artist;
+
+            return `
+                <div class="history-item">
+                    <img src="${coverImage}" alt="${trackName}" class="history-image">
+                    <div class="history-info">
+                        <h3>${trackName}</h3>
+                        <p>${artistName}</p>
+                        <span class="history-timestamp">${formatTime(item.timestamp)}</span>
+                    </div>
+                    ${!isUnknown ? `
+                        <a href="${item.url}" target="_blank" class="history-button">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    ` : ''}
                 </div>
-                <a href="${item.url}" target="_blank" class="history-button">
-                    <i class="fas fa-external-link-alt"></i>
-                </a>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         searchList.innerHTML = historyHTML;
     }
