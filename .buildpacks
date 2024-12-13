@@ -1,2 +1,2 @@
-https://github.com/heroku/heroku-buildpack-apt
-https://github.com/heroku/heroku-buildpack-nodejs.git
+https://github.com/heroku/heroku-buildpack-apt.git#main
+https://github.com/heroku/heroku-buildpack-nodejs.git#main

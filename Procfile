@@ -1,1 +1,1 @@
-web: chmod +x setup.sh && ./setup.sh
+web: which python3 && python3 --version && cd shazam-web && npm install && node server.js

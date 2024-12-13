@@ -1,11 +1,22 @@
 const express = require('express');
 const { formidable } = require('formidable');
-const { exec } = require('child_process');
+const { execSync, exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Configurar Python al inicio
+try {
+    console.log('Checking Python installation...');
+    console.log(execSync('ls -l /usr/bin/python*').toString());
+    console.log('Installing Python dependencies...');
+    execSync('/usr/bin/python3 -m pip install -r ../requirements.txt');
+    console.log('Python dependencies installed successfully');
+} catch (error) {
+    console.error('Error setting up Python:', error);
+}
 
 // Crear directorio para archivos temporales si no existe
 const uploadDir = path.join(__dirname, 'temp');
@@ -58,7 +69,7 @@ app.post('/upload', (req, res) => {
             console.log('Executing Python script with file:', newFilePath);
             // Ejecutar el script de Python con la ruta completa
             const pythonScript = path.join(__dirname, '..', 'shazam.py');
-            exec(`python3 "${pythonScript}" "${newFilePath}"`, (error, stdout, stderr) => {
+            exec(`/usr/bin/python3 "${pythonScript}" "${newFilePath}"`, (error, stdout, stderr) => {
                 // Limpiar el archivo temporal después de procesarlo
                 if (fs.existsSync(newFilePath)) {
                     fs.unlinkSync(newFilePath);
