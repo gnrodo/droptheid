@@ -1,2 +1,2 @@
-shazamio==0.4.0
+shazamio==0.7.0
 aiohttp==3.8.5
