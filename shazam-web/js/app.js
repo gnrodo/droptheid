@@ -237,14 +237,21 @@ class App {
             artistName = data.artist;
         }
 
+        const timestamp = new Date().toISOString();
+        const formatTime = (timestamp) => {
+            const date = new Date(timestamp);
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        };
+
         const resultHTML = `
             <div class="history-item">
                 <img src="${coverImage}" alt="${trackName}" class="history-image">
                 <div class="history-info">
                     <h3>${trackName}</h3>
                     <p>${artistName}</p>
-                    <span class="history-timestamp">${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
-                </div>
+																</div>
                 ${!isUnknown ? `
                     <a href="${data.url}" target="_blank" class="history-button">
                         <i class="fas fa-external-link-alt"></i>

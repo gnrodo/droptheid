@@ -92,60 +92,6 @@
     max-width: 500px;
 }
 
-.result-card {
-    background-color: var(--surface-dark);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    animation: slideUp 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.result-image {
-    width: 64px;
-    height: 64px;
-    border-radius: 8px;
-    object-fit: cover;
-}
-
-.result-info {
-    flex: 1;
-}
-
-.result-info h3 {
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
-}
-
-.result-info p {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-.result-actions {
-    display: flex;
-    gap: 1rem;
-}
-
-.result-button {
-    background-color: var(--button-color);
-    color: var(--text-primary);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-}
-
-.result-button:hover {
-    background-color: var(--button-hover);
-}
-
 @media (max-width: 640px) {
     .upload-section {
         padding: 1rem;

@@ -50,43 +50,23 @@ class HistoryView {
         }
 
         searchList.innerHTML = history.map((item, index) => `
-            <div class="search-item" data-index="${index}">
-                <img src="${item.cover !== 'Unknown' ? item.cover : 'images/logo.png'}" alt="${item.track}" class="history-image">
-                <div class="song-info">
-                    <div class="song-title">${item.track}</div>
-                    <div class="artist-name">${item.artist}</div>
-                    <div class="search-time">${this.formatTime(item.timestamp)}</div>
+            <div class="history-item" data-index="${index}">
+                <img src="${item.cover !== 'Unknown' ? item.cover : 'images/solodisco.png'}" alt="${item.track}" class="history-image">
+                <div class="history-info">
+                    <h3>${item.track}</h3>
+                    <p>${item.artist}</p>
                 </div>
-                <button class="icon-button delete-item" data-index="${index}">
-                    <i class="fas fa-times"></i>
-                </button>
+                ${item.url && item.url !== 'Unknown' ? `
+                    <a href="${item.url}" target="_blank" class="history-button">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                ` : ''}
             </div>
         `).join('');
 
-        // Add click handlers for delete buttons
-        const deleteButtons = searchList.querySelectorAll('.delete-item');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const index = button.dataset.index;
-                this.deleteHistoryItem(index);
-            });
-        });
-
-        // Add click handlers for search items
-        const searchItems = searchList.querySelectorAll('.search-item');
-        searchItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const index = item.dataset.index;
-                const historyItem = history[index];
-                if (historyItem.url && historyItem.url !== 'Unknown') {
-                    window.open(historyItem.url, '_blank');
-                }
-            });
-        });
-
         // Add entrance animations
-        searchItems.forEach((item, index) => {
+        const historyItems = searchList.querySelectorAll('.history-item');
+        historyItems.forEach((item, index) => {
             item.style.opacity = '0';
             item.style.transform = 'translateX(-20px)';
             
