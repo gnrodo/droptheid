@@ -18,12 +18,18 @@ COPY . .
 # Instalar dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Asegurarse de que shazam.py tenga permisos de ejecución
+RUN chmod +x shazam.py
+
 # Instalar dependencias de Node.js
 WORKDIR /app/shazam-web
 RUN npm install
 
 # Exponer puerto
-EXPOSE 3000
+EXPOSE 8080
+
+# Variable de entorno para el puerto
+ENV PORT=8080
 
 # Comando para iniciar la aplicación
 CMD ["npm", "start"]
