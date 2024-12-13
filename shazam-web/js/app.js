@@ -441,7 +441,6 @@ class App {
         const messageElement = document.querySelector('.message');
         setTimeout(() => {
             messageElement.style.opacity = '0';
-            messageElement.style.transform = 'translate(-50%, 20px)';
             setTimeout(() => messageElement.remove(), 300);
         }, 1500);
     }

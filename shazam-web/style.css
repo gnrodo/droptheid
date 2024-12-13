@@ -175,11 +175,11 @@ body {
     padding: 1rem 2rem;
     border-radius: var(--border-radius);
     z-index: 1000;
-    animation: slideUp 0.3s ease;
+    animation: fadeIn 0.3s ease;
     min-width: 280px;
     text-align: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: var(--transition);
+    transition: opacity 0.3s ease;
 }
 
 .message.error {
