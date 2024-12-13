@@ -5,6 +5,6 @@
     "node": "18.x"
   },
   "scripts": {
-    "start": "cd shazam-web && npm install && npm start"
+    "start": "cd shazam-web && npm install --omit=dev && npm start"
   }
 }
