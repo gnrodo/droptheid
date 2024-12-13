@@ -3,6 +3,7 @@ class App {
         this.currentView = null;
         this.viewCache = {};
         this.navItems = document.querySelectorAll('.nav-item');
+        this.lastSearchResult = null;
         this.init();
     }
 
@@ -146,6 +147,12 @@ class App {
         const dropZone = viewElement.querySelector('.drop-zone');
         const fileInput = viewElement.querySelector('#videoUpload');
         const uploadButton = viewElement.querySelector('.upload-button');
+								const resultsContainer = viewElement.querySelector('#results');
+
+        // Restore last search result if exists
+        if (this.lastSearchResult && resultsContainer) {
+            this.showResults(this.lastSearchResult);
+        }
 
         if (dropZone && fileInput) {
             dropZone.addEventListener('dragover', (e) => {
@@ -220,6 +227,9 @@ class App {
         const resultsContainer = document.getElementById('results');
         if (!resultsContainer) return;
 
+        // Store the result for persistence
+        this.lastSearchResult = data;
+
         // Declare variables first
         let coverImage, trackName, artistName;
         // Trim and convert to lowercase for comparison
@@ -252,15 +262,30 @@ class App {
                     <h3>${trackName}</h3>
                     <p>${artistName}</p>
 																</div>
-                ${!isUnknown ? `
-                    <a href="${data.url}" target="_blank" class="history-button">
-                        <i class="fas fa-external-link-alt"></i>
-                    </a>
-                ` : ''}
+                <div class="history-actions">
+                    ${!isUnknown ? `
+                        <a href="${data.url}" target="_blank" class="history-button">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    ` : ''}
+                    <button class="history-button delete-item">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
         `;
 
         resultsContainer.innerHTML = resultHTML;
+        
+                // Add click handler for delete button in search results
+                const deleteButton = resultsContainer.querySelector('.delete-item');
+                if (deleteButton) {
+                    deleteButton.addEventListener('click', () => {
+                        resultsContainer.innerHTML = '';
+                        this.lastSearchResult = null;
+                        this.showMessage('Resultado eliminado');
+                    });
+                }
     }
 
     addToSearchHistory(result) {
@@ -327,7 +352,7 @@ class App {
             return `${hours}:${minutes}`;
         };
 
-        const historyHTML = history.map(item => {
+        const historyHTML = history.map((item, index) => {
             // Trim and convert to lowercase for comparison
             const track = (item.track || '').trim().toLowerCase();
             const isUnknown = track === 'unknown' || !track;
@@ -343,16 +368,35 @@ class App {
                         <p>${artistName}</p>
                         <span class="history-timestamp">${formatTime(item.timestamp)}</span>
                     </div>
-                    ${!isUnknown ? `
-                        <a href="${item.url}" target="_blank" class="history-button">
-                            <i class="fas fa-external-link-alt"></i>
-                        </a>
-                    ` : ''}
+                    <div class="history-actions">
+                        ${!isUnknown ? `
+                            <a href="${item.url}" target="_blank" class="history-button">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        ` : ''}
+                        <button class="history-button delete-item" data-index="${index}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
             `;
         }).join('');
 
         searchList.innerHTML = historyHTML;
+        
+                // Add click handlers for delete buttons
+                const deleteButtons = searchList.querySelectorAll('.delete-item');
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const index = parseInt(button.dataset.index);
+                        const history = this.getSearchHistory();
+                        history.splice(index, 1);
+                        localStorage.setItem('searchHistory', JSON.stringify(history));
+                        this.displaySearchHistory(viewElement);
+                        this.showMessage('Item eliminado del historial');
+                    });
+                });
     }
 
     showLoading() {
@@ -376,6 +420,10 @@ class App {
     }
 
     showMessage(message, type = 'info') {
+        // Remove any existing messages first
+        const existingMessages = document.querySelectorAll('.message');
+        existingMessages.forEach(msg => msg.remove());
+
         const messageHTML = `
             <div class="message ${type}">
                 ${message}
@@ -388,7 +436,7 @@ class App {
             messageElement.style.opacity = '0';
             messageElement.style.transform = 'translate(-50%, 20px)';
             setTimeout(() => messageElement.remove(), 300);
-        }, 3000);
+        }, 1500);
     }
 }
 

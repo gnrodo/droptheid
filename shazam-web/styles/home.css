@@ -4,7 +4,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 6rem;
+    gap: 3rem;
     padding: 2rem;
     min-height: calc(100vh - var(--nav-height) * 2);
     animation: fadeIn 0.8s ease;
@@ -21,17 +21,11 @@
 }
 
 .logo-container .logo-image {
-    width: 24rem;
+    width: 30rem;
     height: auto;
     object-fit: contain;
     animation: pulse 3s infinite;
     filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
-    transition: all 0.3s ease;
-}
-
-.logo-container:hover .logo-image {
-    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.2));
-    transform: scale(1.05);
 }
 
 .continue-button {
@@ -140,12 +134,12 @@
 
 @media (max-width: 640px) {
     .landing-content {
-        gap: 4rem;
+        gap: 2rem;
         padding: 1.5rem;
     }
     
     .logo-container .logo-image {
-        width: 18rem;
+        width: 22rem;
     }
     
     .continue-button {
@@ -156,11 +150,11 @@
 
 @media (max-height: 600px) {
     .landing-content {
-        gap: 3rem;
+        gap: 2rem;
     }
     
     .logo-container .logo-image {
-        width: 16rem;
+        width: 20rem;
     }
     
     .continue-button {

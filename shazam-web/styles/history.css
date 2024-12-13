@@ -59,6 +59,7 @@
     flex-direction: column;
     gap: 0.75rem;
     padding: 0.5rem;
+    padding-bottom: 5rem;
     margin-top: 1rem;
 }
 
@@ -123,30 +124,55 @@
     opacity: 0.7;
 }
 
+.history-actions {
+				display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
 #history-view .history-button,
 #results .history-button {
     background-color: var(--button-color);
     color: var(--text-primary);
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
+    padding: 0.5rem;
+    width: 32px;
+    height: 32px;
+				border-radius: var(--border-radius);
+				cursor: pointer;
+				transition: all 0.3s ease;
+				font-size: 0.9rem;
     text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 }
 
 #history-view .history-button:hover,
 #results .history-button:hover {
-    background-color: var(--button-hover);
+				background-color: var(--button-hover);
 }
 
 #history-view .history-button i,
 #results .history-button i {
-    font-size: 1.1rem;
+				font-size: 1rem;
+}
+
+#history-view .delete-item,
+#results .delete-item {
+				background-color: rgba(207, 102, 121, 0.2);
+				color: rgb(207, 102, 121);
+}
+
+#history-view .delete-item:hover,
+#results .delete-item:hover {
+				background-color: rgba(207, 102, 121, 0.4);
+				color: white;
+}
+
+#history-view .delete-item i,
+#results .delete-item i {
+				font-size: 0.9rem;
 }
 
 .empty-history {

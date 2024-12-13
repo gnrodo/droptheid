@@ -30,6 +30,18 @@ class HistoryView {
         }
 
         this.updateHistoryList();
+        
+        // Add event delegation for delete buttons
+        const searchList = document.querySelector('.search-list');
+        if (searchList) {
+            searchList.addEventListener('click', (e) => {
+                const deleteButton = e.target.closest('.delete-item');
+                if (deleteButton) {
+                    const index = deleteButton.dataset.index;
+                    this.deleteHistoryItem(index);
+                }
+            });
+        }
     }
 
     updateHistoryList() {
@@ -56,11 +68,16 @@ class HistoryView {
                     <h3>${item.track}</h3>
                     <p>${item.artist}</p>
                 </div>
-                ${item.url && item.url !== 'Unknown' ? `
-                    <a href="${item.url}" target="_blank" class="history-button">
-                        <i class="fas fa-external-link-alt"></i>
-                    </a>
-                ` : ''}
+                <div class="history-actions">
+                    ${item.url && item.url !== 'Unknown' ? `
+                        <a href="${item.url}" target="_blank" class="history-button">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    ` : ''}
+                    <button class="history-button delete-item" data-index="${index}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
         `).join('');
 

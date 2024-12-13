@@ -45,16 +45,10 @@ body {
 }
 
 .header-logo {
-    height: 40px;
+    height: 34px;
     width: auto;
     object-fit: contain;
-    transition: var(--transition);
     filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
-}
-
-.header-logo:hover {
-    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
-    transform: scale(1.05);
 }
 
 /* Main Container */
@@ -250,7 +244,7 @@ body {
     }
     
     .header-logo {
-        height: 36px;
+        height: 30px;
     }
     
     .message {
