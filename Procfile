@@ -1,1 +1,1 @@
-web: cd shazam-web && npm install && node server.js
+web: pip3 install -r requirements.txt && cd shazam-web && npm install && node server.js

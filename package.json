@@ -2,10 +2,9 @@
   "name": "shazam-root",
   "version": "1.0.0",
   "engines": {
-    "node": "18.x",
-    "python": "3.9"
+    "node": "18.x"
   },
   "scripts": {
-    "start": "cd /app/shazam-web && npm install --omit=dev && npm start"
+    "start": "cd shazam-web && npm install --omit=dev && node server.js"
   }
 }

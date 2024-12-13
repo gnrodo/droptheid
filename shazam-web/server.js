@@ -58,7 +58,7 @@ app.post('/upload', (req, res) => {
             console.log('Executing Python script with file:', newFilePath);
             // Ejecutar el script de Python con la ruta completa
             const pythonScript = path.join(__dirname, '..', 'shazam.py');
-            exec(`python "${pythonScript}" "${newFilePath}"`, (error, stdout, stderr) => {
+            exec(`python3 "${pythonScript}" "${newFilePath}"`, (error, stdout, stderr) => {
                 // Limpiar el archivo temporal después de procesarlo
                 if (fs.existsSync(newFilePath)) {
                     fs.unlinkSync(newFilePath);
